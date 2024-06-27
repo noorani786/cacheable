@@ -36,7 +36,8 @@ module Cacheable
 
         define_method(method_names[:with_cache_method_name]) do |*args|
           Cacheable.cache_adapter.fetch(__send__(method_names[:key_format_method_name], *args), opts[:cache_options]) do
-            __send__(method_names[:without_cache_method_name], *args)
+            result = __send__(method_names[:without_cache_method_name], *args)
+            result.instance_of?(Mongoid::Relations::Targets::Enumerable) ? result.to_a : result
           end
         end
 
